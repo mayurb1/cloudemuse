@@ -4,12 +4,13 @@ import WeatherCard from "../components/WeatherCard";
 import ForecastList from "../components/ForecastList";
 import LoadingSpinner from "../components/LoadingSpinner";
 import UnitToggle from "../components/UnitToggle";
-import Favorites from "../components/Favorites";
+import FavoritesMenu from "../components/FavoritesMenu";
 import UseLocationButton from "../components/UseLocationButton";
 import HourlyChart from "../components/HourlyChart";
 import AirQuality from "../components/AirQuality";
 import ThemeToggle from "../components/ThemeToggle";
-import FavoriteButton from "../components/FavoriteButton";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 import {
   getWeatherByCity,
   getWeatherByCoords,
@@ -17,6 +18,8 @@ import {
   getExtrasByCoords,
 } from "../services/weatherService";
 import { getBackgroundStyle, useTheme } from "../theme/theme";
+import { useToast } from "../ui/ToastProvider.jsx";
+import { CardSkeleton, RowSkeleton } from "../components/Skeletons.jsx";
 
 const LAST_CITY_KEY = "last_city";
 const FAVS_KEY = "favorite_cities";
@@ -42,6 +45,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const { resolvedTheme } = useTheme();
+  const { showToast } = useToast();
 
   useEffect(() => {
     localStorage.setItem("units", units);
@@ -144,10 +148,14 @@ export default function Home() {
 
   function addFavorite(city) {
     if (!city) return;
-    setFavorites((prev) => (prev.includes(city) ? prev : [...prev, city]));
+    if (favorites.includes(city)) return;
+    setFavorites((prev) => [...prev, city]);
+    showToast(`${city} added to favorites`, { type: "success" });
   }
   function removeFavorite(city) {
+    if (!favorites.includes(city)) return;
     setFavorites((prev) => prev.filter((c) => c !== city));
+    showToast(`${city} removed from favorites`, { type: "info" });
   }
 
   function handleSelectSuggestion(s) {
@@ -161,80 +169,71 @@ export default function Home() {
 
   return (
     <div className="min-h-screen w-full bg-fixed" style={bgStyle}>
-      <div className="mx-auto max-w-5xl px-4 py-8">
-        <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
-          <div className="flex-1 w-full">
-            <SearchBar
-              initialValue={cityQuery}
-              onSearch={loadByCity}
-              onSelectSuggestion={handleSelectSuggestion}
-            />
-          </div>
-          <div className="flex items-center gap-2">
-            <UseLocationButton
-              onLocate={() => {
-                if ("geolocation" in navigator) {
-                  navigator.geolocation.getCurrentPosition((pos) =>
-                    loadByCoords(pos.coords.latitude, pos.coords.longitude)
-                  );
-                }
-              }}
+      <Header />
+      <main className="mx-auto max-w-6xl px-3 sm:px-4 py-6 sm:py-8 animate-fade-in-up">
+        <div>
+          <SearchBar
+            initialValue={cityQuery}
+            onSearch={loadByCity}
+            onSelectSuggestion={handleSelectSuggestion}
+          />
+          <div className="mt-3 flex items-center gap-2">
+            <FavoritesMenu
+              items={favorites}
+              onSelect={loadByCity}
+              onRemove={removeFavorite}
+              canAddCurrent={!!current?.name}
+              onAddCurrent={() => addFavorite(current.name)}
             />
             <UnitToggle units={units} onChange={setUnits} />
-            <ThemeToggle />
           </div>
         </div>
-
-        <Favorites
-          items={favorites}
-          onSelect={loadByCity}
-          onRemove={removeFavorite}
-        />
-
-        {loading && <LoadingSpinner />}
+        {loading && (
+          <div className="mt-6 space-y-6">
+            <CardSkeleton />
+            <RowSkeleton />
+          </div>
+        )}
         {error && (
           <div className="mt-4 rounded-md bg-red-50 text-red-700 ring-1 ring-red-200 p-3 text-sm">
             {error}
           </div>
         )}
-
         {current && (
-          <div className="mt-6">
-            <div className="flex items-center justify-between">
-              <div className="section-title">Now</div>
-              <FavoriteButton
-                active={favorites.includes(current.name)}
-                onClick={() => {
-                  if (favorites.includes(current.name))
-                    removeFavorite(current.name);
-                  else addFavorite(current.name);
-                }}
+          <div className="mt-5 sm:mt-6 space-y-6">
+            <div className="animate-fade-in-up">
+              <WeatherCard
+                city={current.name}
+                country={current.sys?.country}
+                temp={current.main?.temp}
+                condition={
+                  current.weather?.[0]?.description ||
+                  current.weather?.[0]?.main
+                }
+                humidity={current.main?.humidity}
+                wind={current.wind?.speed}
+                icon={current.weather?.[0]?.icon}
+                units={units}
               />
             </div>
-            <WeatherCard
-              city={current.name}
-              country={current.sys?.country}
-              temp={current.main?.temp}
-              condition={
-                current.weather?.[0]?.description || current.weather?.[0]?.main
-              }
-              humidity={current.main?.humidity}
-              wind={current.wind?.speed}
-              icon={current.weather?.[0]?.icon}
-              units={units}
-            />
-            <ForecastList days={forecast} units={units} />
-            <HourlyChart hours={hours} units={units} />
-            <AirQuality aqi={air.aqi} pm25={air.pm25} pm10={air.pm10} />
+            <div className="animate-fade-in-up">
+              <ForecastList days={forecast} units={units} />
+            </div>
+            <div className="animate-fade-in-up">
+              <HourlyChart hours={hours} units={units} />
+            </div>
+            <div className="animate-fade-in-up">
+              <AirQuality aqi={air.aqi} pm25={air.pm25} pm10={air.pm10} />
+            </div>
           </div>
         )}
-
         {!current && !loading && !error && (
           <div className="mt-10 text-center text-slate-700">
             Search for a city or allow location access to see weather.
           </div>
         )}
-      </div>
+        <Footer />
+      </main>
     </div>
   );
 }

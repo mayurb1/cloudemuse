@@ -17,6 +17,11 @@
       Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial,
       "Apple Color Emoji", "Segoe UI Emoji";
   }
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
 }
 
 /* Reusable surfaces and controls for consistent contrast */
@@ -29,12 +34,15 @@
   }
   .btn-primary {
     @apply rounded-md bg-sky-600 px-4 py-2 text-white hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-400 disabled:opacity-60;
+    min-height: 2.75rem;
   }
   .btn-secondary {
     @apply rounded-md bg-white px-3 py-2 text-slate-700 ring-1 ring-slate-300 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-600;
+    min-height: 2.75rem;
   }
   .input-text {
     @apply w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100;
+    min-height: 2.75rem;
   }
   .section-title {
     @apply text-lg font-semibold text-slate-800 dark:text-slate-100;

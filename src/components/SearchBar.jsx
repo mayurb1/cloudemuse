@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Search as IconSearch } from "lucide-react";
 import { searchCities } from "../services/weatherService";
 
 export default function SearchBar({
@@ -80,34 +81,45 @@ export default function SearchBar({
   }
 
   return (
-    <div className="w-full max-w-xl mx-auto relative" ref={boxRef}>
-      <form onSubmit={handleSubmit} className="flex">
-        <input
-          type="text"
-          placeholder="Search city..."
-          className="input-text rounded-r-none"
-          value={value}
-          onChange={(e) => handleType(e.target.value)}
-          onKeyDown={onKeyDown}
-        />
-        <button type="submit" className="btn-primary rounded-l-none">
+    <div className="w-full relative" ref={boxRef}>
+      <form onSubmit={handleSubmit} className="flex w-full items-stretch">
+        <div className="relative flex-1">
+          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">
+            <IconSearch className="h-5 w-5" />
+          </span>
+          <input
+            type="text"
+            placeholder="Search city..."
+            className="w-full rounded-l-full border-none bg-white/80 dark:bg-slate-800/80 ring-1 ring-slate-300 dark:ring-slate-600 focus:ring-2 focus:ring-sky-400 shadow-soft px-10 py-2.5 text-slate-900 dark:text-slate-100 placeholder-slate-400"
+            value={value}
+            onChange={(e) => handleType(e.target.value)}
+            onKeyDown={onKeyDown}
+          />
+        </div>
+        <button
+          type="submit"
+          className="rounded-r-full bg-gradient-to-r from-sky-600 to-blue-600 px-5 py-2.5 text-white font-medium shadow-soft hover:brightness-105 focus:outline-none focus:ring-2 focus:ring-sky-400"
+        >
           Search
         </button>
       </form>
       {open && suggestions.length > 0 && (
-        <ul className="absolute z-10 mt-1 w-full max-h-64 overflow-auto rounded-md bg-white ring-1 ring-slate-200 shadow-lg dark:bg-slate-800 dark:ring-slate-700">
+        <ul className="absolute z-10 mt-2 w-full max-h-72 overflow-auto rounded-xl bg-white/95 dark:bg-slate-800/95 ring-1 ring-slate-200 dark:ring-slate-700 shadow-soft backdrop-blur">
           {suggestions.map((s, idx) => (
             <li
               key={`${s.name}-${s.lat}-${s.lon}`}
-              className={`px-3 py-2 cursor-pointer text-sm ${
-                idx === highlightIdx ? "bg-sky-50 dark:bg-sky-900/40" : ""
+              className={`px-3 py-2 cursor-pointer text-sm flex items-center justify-between ${
+                idx === highlightIdx ? "bg-sky-50 dark:bg-sky-900/30" : ""
               }`}
               onMouseDown={(e) => {
                 e.preventDefault();
                 selectSuggestion(s);
               }}
             >
-              {s.label}
+              <span className="truncate text-slate-800 dark:text-slate-100">
+                {s.label}
+              </span>
+              <span className="text-xs text-slate-400">↵</span>
             </li>
           ))}
         </ul>
