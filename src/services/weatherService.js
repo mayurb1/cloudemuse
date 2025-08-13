@@ -2,10 +2,13 @@ export const OPENWEATHER_BASE_URL = "https://api.openweathermap.org/data/2.5";
 
 const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
 
-if (!API_KEY) {
+const isProd = import.meta.env.PROD;
+const netlifyProxy = "/.netlify/functions/weather";
+
+if (!API_KEY && !isProd) {
   // eslint-disable-next-line no-console
   console.warn(
-    "Missing VITE_OPENWEATHER_API_KEY. Create a .env with your key."
+    "Missing VITE_OPENWEATHER_API_KEY for local dev. In production, Netlify function will be used."
   );
 }
 
@@ -13,27 +16,44 @@ export function buildIconUrl(iconCode) {
   return `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
 }
 
+function owmUrl(path) {
+  if (isProd) {
+    return `${netlifyProxy}${path}`;
+  }
+  return `${OPENWEATHER_BASE_URL}${path}${
+    path.includes("?") ? "&" : "?"
+  }appid=${API_KEY}`;
+}
+
 export async function fetchCurrentWeatherByCity(city, units = "metric") {
-  const url = `${OPENWEATHER_BASE_URL}/weather?q=${encodeURIComponent(
-    city
-  )}&appid=${API_KEY}&units=${units}`;
+  const url = isProd
+    ? `${netlifyProxy}?route=current&city=${encodeURIComponent(
+        city
+      )}&units=${units}`
+    : owmUrl(`/weather?q=${encodeURIComponent(city)}&units=${units}`);
   return request(url);
 }
 
 export async function fetchForecastByCity(city, units = "metric") {
-  const url = `${OPENWEATHER_BASE_URL}/forecast?q=${encodeURIComponent(
-    city
-  )}&appid=${API_KEY}&units=${units}`;
+  const url = isProd
+    ? `${netlifyProxy}?route=forecast&city=${encodeURIComponent(
+        city
+      )}&units=${units}`
+    : owmUrl(`/forecast?q=${encodeURIComponent(city)}&units=${units}`);
   return request(url);
 }
 
 export async function fetchCurrentWeatherByCoords(lat, lon, units = "metric") {
-  const url = `${OPENWEATHER_BASE_URL}/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=${units}`;
+  const url = isProd
+    ? `${netlifyProxy}?route=currentByCoords&lat=${lat}&lon=${lon}&units=${units}`
+    : owmUrl(`/weather?lat=${lat}&lon=${lon}&units=${units}`);
   return request(url);
 }
 
 export async function fetchForecastByCoords(lat, lon, units = "metric") {
-  const url = `${OPENWEATHER_BASE_URL}/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=${units}`;
+  const url = isProd
+    ? `${netlifyProxy}?route=forecastByCoords&lat=${lat}&lon=${lon}&units=${units}`
+    : owmUrl(`/forecast?lat=${lat}&lon=${lon}&units=${units}`);
   return request(url);
 }
 
