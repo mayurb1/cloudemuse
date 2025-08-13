@@ -1,0 +1,12 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# SPA fallback so client-side routing works
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200 

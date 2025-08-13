@@ -54,3 +54,22 @@ npm run preview
 
 - OpenWeatherMap key is optional now. If OWM calls fail, the app falls back to Open‑Meteo for weather and to Open‑Meteo Air Quality for AQI.
 - Environment variables are accessed with `import.meta.env.VITE_OPENWEATHER_API_KEY`.
+
+## Deploy on Netlify
+
+- This repo includes `netlify.toml` with:
+  - build command: `npm run build`
+  - publish directory: `dist`
+  - SPA redirect for client-side routing
+  - Node version 20
+
+Steps:
+
+1. Push your code to GitHub/GitLab/Bitbucket.
+2. In Netlify, “Add new site” → “Import an existing project”.
+3. Select your repo. Use these settings if prompted:
+   - Build command: `npm run build`
+   - Publish directory: `dist`
+4. Add environment variable in Netlify site settings:
+   - `VITE_OPENWEATHER_API_KEY=YOUR_API_KEY`
+5. Deploy. Netlify will build and host your app.
