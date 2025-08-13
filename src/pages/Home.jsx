@@ -177,7 +177,7 @@ export default function Home() {
             onSearch={loadByCity}
             onSelectSuggestion={handleSelectSuggestion}
           />
-          <div className="mt-3 flex items-center gap-2">
+          <div className="mt-3 flex items-center justify-between gap-3 flex-wrap">
             <FavoritesMenu
               items={favorites}
               onSelect={loadByCity}

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Star } from "lucide-react";
 
 export default function FavoritesMenu({
   items = [],
@@ -22,22 +23,17 @@ export default function FavoritesMenu({
     <div className="relative" ref={ref}>
       <button
         type="button"
-        className="btn-secondary inline-flex items-center gap-2"
+        className="inline-flex h-11 items-center gap-2 rounded-full ring-1 ring-slate-200 dark:ring-slate-600 bg-white/80 dark:bg-slate-800/80 px-4 hover:brightness-105"
         onClick={() => setOpen((o) => !o)}
         title="Favorites"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          className="h-4 w-4 text-sky-600 dark:text-sky-400"
-          fill="currentColor"
-        >
-          <path d="M12 .587l3.668 7.431L24 9.753l-6 5.848 1.416 8.265L12 19.771 4.584 23.866 6 15.601 0 9.753l8.332-1.735z" />
-        </svg>
-        <span className="text-sm">Favorites</span>
+        <Star className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+        <span className="text-sm text-slate-700 dark:text-slate-100">
+          Favorites
+        </span>
       </button>
       {open && (
-        <div className="absolute right-0 mt-2 w-64 rounded-md bg-white ring-1 ring-slate-200 shadow-lg dark:bg-slate-800 dark:ring-slate-700 z-20">
+        <div className="absolute right-0 mt-2 w-64 rounded-xl bg-white ring-1 ring-slate-200 shadow-soft dark:bg-slate-800 dark:ring-slate-700 z-20">
           <div className="p-2 max-h-72 overflow-auto">
             {canAddCurrent && (
               <button
@@ -45,7 +41,7 @@ export default function FavoritesMenu({
                   onAddCurrent?.();
                   setOpen(false);
                 }}
-                className="w-full text-left px-2 py-1.5 rounded hover:bg-slate-50 dark:hover:bg-slate-700 text-sm mb-1"
+                className="w-full text-left px-2 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-sm mb-1"
               >
                 + Add current city
               </button>
@@ -58,7 +54,7 @@ export default function FavoritesMenu({
             {items.map((city) => (
               <div
                 key={city}
-                className="flex items-center justify-between px-2 py-1.5 rounded hover:bg-slate-50 dark:hover:bg-slate-700"
+                className="flex items-center justify-between px-2 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700"
               >
                 <button
                   onClick={() => {
