@@ -9,7 +9,7 @@ export default function HourlyChart({ hours = [], units = "metric" }) {
         {items.map((h) => (
           <div
             key={h.time}
-            className="card-surface p-3 text-center select-none"
+            className="card-surface p-3 text-center select-none min-w-0"
           >
             <div className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-300">
               {new Date(h.time).toLocaleTimeString([], {
@@ -21,7 +21,7 @@ export default function HourlyChart({ hours = [], units = "metric" }) {
               {Math.round(h.temp)}
               {unitSymbol}
             </div>
-            <div className="text-[11px] sm:text-xs text-slate-600 dark:text-slate-300">
+            <div className="text-[11px] sm:text-xs text-slate-600 dark:text-slate-300 whitespace-nowrap overflow-hidden text-ellipsis">
               {h.condition}
             </div>
           </div>
